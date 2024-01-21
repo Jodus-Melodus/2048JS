@@ -27,22 +27,22 @@ function handleTouchMove(evt) {
     var yDiff = yDown - yUp;
 
     if (Math.abs(xDiff) > Math.abs(yDiff)) {
-        if (xDiff > 0) {
-            /* right swipe */
-            move("e");
-        } else {
-            /* left swipe */
-            move("w");
+            if (xDiff > 0) {
+                /* right swipe */
+                move("w");
+            } else {
+                /* left swipe */
+                move("e");
+            }
         }
-    } else {
-        if (yDiff > 0) {
-            /* down swipe */
-            move("s");
-        } else {
-            /* up swipe */
-            move("n");
-        }
-    }
+    else if (yDiff > 0) {
+                /* down swipe */
+                move("n");
+            }
+    else {
+                /* up swipe */
+                move("s");
+            }
     /* reset values */
     xDown = null;
     yDown = null;
