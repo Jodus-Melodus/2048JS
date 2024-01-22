@@ -54,7 +54,7 @@ function move(direction) {
         let element = document.getElementById(i.toString());
 
         if (element) {
-            board.push(element.textContent);
+            board.push(element.textContent == ""? 0:element.textContent);
         }
     }
 
@@ -176,22 +176,38 @@ function genRandomNumber() {
 
 function compress(direction, row) {
     let compressed = [];
-    let i = 0;
+    const array = row.map(element => parseInt(element));
+    let zeroless = array.filter(element => element !== 0);
 
-    while (i < row.length) {
-        if ((i + 1 < row.length) && (row[i] == row[i + 1]) && (row[i] != 0)) {
-            compressed.push(row[i] * 2);
-            i += 1;
-        } else if (row[i] != 0) {
-            compressed.push(row[i]);
+    if ((direction == "w") || (direction == "n")) {
+        let i = 0;
+        while (i < zeroless.length) {
+            if ((i + 1 < zeroless.length) && (zeroless[i] == zeroless[i + 1])) {
+                compressed.push(zeroless[i] * 2);
+                i++;
+            } else {
+                compressed.push(zeroless[i]);
+            }
+            i++;
         }
-        i += 1;
+    } else {
+        let i = zeroless.length - 1;
+        while (i >= 0) {
+            if ((i > 0) && (zeroless[i] == zeroless[i - 1])) {
+                compressed.push(zeroless[i] * 2);
+                i--;
+            } else {
+                compressed.push(zeroless[i]);
+            }
+            i--;
+        }
     }
-    while (compressed.length != 4) {
-        if (direction == 'w' || direction == 'n') {
-            compressed.push(0);
-        } else {
+
+    while (compressed.length != row.length) {
+        if ((direction == "e") || direction == "s") {
             compressed.unshift(0);
+        } else {
+            compressed.push(0);
         }
     }
     return compressed;
