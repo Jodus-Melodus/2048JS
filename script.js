@@ -98,6 +98,14 @@ function move(direction) {
         updateColors(e, element.toString());
     }
     genRandomNumber();
+
+    const totalMovesElement = document.getElementById("total-moves");
+    totalMovesElement.textContent = (parseInt(totalMovesElement.textContent, 10) + 1).toString();
+
+    const sum = board.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    const scoreElement = document.getElementById("total-score");
+    scoreElement.textContent = sum;
+
 }
 
 function updateColors(element, newValue) {
