@@ -85,6 +85,9 @@ function move(direction) {
     for (let i = 0; i < board.length; i++) {
         const element = board[i];
         let e = document.getElementById(i.toString());
+        if (element == "2048") {
+            alert("U won !");
+        }
 
         if (element != "0") {
             e.innerHTML = element;
@@ -92,47 +95,63 @@ function move(direction) {
             e.innerHTML = null;
         }
 
-        e.classList.remove(...e.classList);
-        switch (element) {
-            case "2":
-                e.classList.add("value2");
-                break;
-            case "4":
-                e.classList.add("value4");
-                break;
-            case "8":
-                e.classList.add("value8");
-                break;
-            case "16":
-                e.classList.add("value16");
-                break;
-            case "32":
-                e.classList.add("value32");
-                break;
-            case "64":
-                e.classList.add("value64");
-                break;
-            case "128":
-                e.classList.add("value128");
-                break;
-            case "265":
-                e.classList.add("value265");
-                break;
-            case "512":
-                e.classList.add("value512");
-                break;
-            case "1024":
-                e.classList.add("value1024");
-                break;
-            case "2048":
-                e.classList.add("value2048");
-                break;
-            default:
-                e.classList.add("game-tile");
-                break;
-        }
+        updateColors(e, element.toString());
     }
     genRandomNumber();
+}
+
+function updateColors(element, newValue) {
+    element.classList.remove(...element.classList);
+    switch (newValue) {
+        case "2":
+            element.classList.add("value2");
+            element.classList.add("game-tile");
+            break;
+        case "4":
+            element.classList.add("value4");
+            element.classList.add("game-tile");
+            break;
+        case "8":
+            element.classList.add("value8");
+            element.classList.add("game-tile");
+            break;
+        case "16":
+            element.classList.add("value16");
+            element.classList.add("game-tile");
+            break;
+        case "32":
+            element.classList.add("value32");
+            element.classList.add("game-tile");
+            break;
+        case "64":
+            element.classList.add("value64");
+            element.classList.add("game-tile");
+            break;
+        case "128":
+            element.classList.add("value128");
+            element.classList.add("game-tile");
+            break;
+        case "265":
+            element.classList.add("value265");
+            element.classList.add("game-tile");
+            break;
+        case "512":
+            element.classList.add("value512");
+            element.classList.add("game-tile");
+            break;
+        case "1024":
+            element.classList.add("value1024");
+            element.classList.add("game-tile");
+            break;
+        case "2048":
+            element.classList.add("value2048");
+            element.classList.add("game-tile");
+            break;
+        default:
+            element.classList.add("game-tile");
+            element.classList.add("game-tile");
+            break;
+    }
 }
 
 function getRandomInt(min, max) {
@@ -144,10 +163,12 @@ function genRandomNumber() {
         let idx = getRandomInt(0, 15);
         let chance = getRandomInt(1, 10);
         let number = chance < 9 ? 2 : 4;
+        let element = document.getElementById(idx.toString());
 
-        let currentNumber = document.getElementById(idx.toString()).textContent;
+        let currentNumber = element.textContent;
         if (currentNumber == "") {
-            document.getElementById(idx.toString()).innerHTML = number;
+            element.innerHTML = number;
+            updateColors(element, number.toString());
             break;
         }
     }
