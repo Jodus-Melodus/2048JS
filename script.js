@@ -27,89 +27,76 @@ function handleTouchMove(evt) {
     var yDiff = yDown - yUp;
 
     if (Math.abs(xDiff) > Math.abs(yDiff)) {
-            if (xDiff > 0) {
-                /* right swipe */
-                move("w");
-            } else {
-                /* left swipe */
-                move("e");
-            }
+        if (xDiff > 0) {
+            move("w");
+        } else {
+            move("e");
         }
-    else if (yDiff > 0) {
-                /* down swipe */
-                move("n");
-            }
-    else {
-                /* up swipe */
-                move("s");
-            }
-    /* reset values */
+    } else if (yDiff > 0) {
+        move("n");
+    } else {
+        move("s");
+    }
     xDown = null;
     yDown = null;
 };
 function move(direction) {
     let board = [];
 
-    for (let i = 0; i < 16; i++) {
-        let element = document.getElementById(i.toString());
-
-        if (element) {
-            board.push(element.textContent == ""? 0:element.textContent);
+    for (let r = 0; r < 4; r++) {
+        let row = [];
+        for (let c = 0; c < 4; c++) {
+            let v = document.getElementById((4 * r + c).toString()).textContent;
+            row.push(v == ""? 0:parseInt(v));
         }
+        board.push(row);
     }
 
-    for (let c = 0; c < 4; c++) {
-        let col = [];
+    let newboard = board;
 
-        for (let n = 0; n < 4; n++) {
-            let idx = 0;
-            if (direction == 'w' || direction == 'e') {
-                idx = 4 * c + n;
-            } else {
-                idx = 4 * n + c;
-            }
-            col.push(board[idx]);
-        }
-        let compressed_column = compress(direction, col);
-        for (let n = 0; n < 4; n++) {
-            let idx = 0;
-            if (direction == 'w' || direction == 'e') {
-                idx = 4 * c + n;
-            } else {
-                idx = 4 * n + c;
-            }
-            board[idx] = compressed_column[n];
-        }
-    }
+    if ((direction == "e") || (direction == "w")) {
+        for (let r = 0; r < 4; r++) {
+            let row = [];
+            for (let c = 0; c < 4; c++) {
+                row.push(newboard[r][c]);
+            };
+            newboard[r] = compress(direction, row);
+        };
+    } else {
+        for (let r = 0; r < 4; r++) {
+            let row = [];
+            for (let c = 0; c < 4; c++) {
+                row.push(newboard[c][r])
+            };
+            let compressed = compress(direction, row);
+            for (let i = 0; i < 4; i++) {
+                newboard[i][r] = compressed[i]
+            };
+        };
+    };
 
-    for (let i = 0; i < board.length; i++) {
-        const element = board[i];
-        let e = document.getElementById(i.toString());
-        if (element == "2048") {
-            alert("U won !");
-        }
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+            let element = document.getElementById((4 * r + c).toString());
 
-        if (element != "0") {
-            e.innerHTML = element;
-        } else {
-            e.innerHTML = null;
+            element.innerHTML = newboard[r][c];
+            updateColors(element, newboard[r][c].toString())
         }
-
-        updateColors(e, element.toString());
-    }
-    genRandomNumber();
+    };
+    genRandomNumber(newboard);
 
     const totalMovesElement = document.getElementById("total-moves");
     totalMovesElement.textContent = (parseInt(totalMovesElement.textContent, 10) + 1).toString();
 
-    const sum = board.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    const sum = newboard.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     const scoreElement = document.getElementById("total-score");
     scoreElement.textContent = sum;
-
 }
 
 function updateColors(element, newValue) {
     element.classList.remove(...element.classList);
+
+    console.log(newValue);
     switch (newValue) {
         case "2":
             element.classList.add("value2");
@@ -166,19 +153,26 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function genRandomNumber() {
-    while (true) {
-        let idx = getRandomInt(0, 15);
-        let chance = getRandomInt(1, 10);
-        let number = chance < 9 ? 2 : 4;
-        let element = document.getElementById(idx.toString());
-
-        let currentNumber = element.textContent;
-        if (currentNumber == "") {
-            element.innerHTML = number;
-            updateColors(element, number.toString());
-            break;
+function genRandomNumber(board) {    
+    let availableIndexes = [];
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+            if (board[r][c] == 0) {
+                availableIndexes.push([r, c]);
+            }
         }
+    }
+
+    let idx = availableIndexes[getRandomInt(0, availableIndexes.length)];
+    let chance = getRandomInt(0, 10);
+    let number = chance < 9 ? 2: 4;
+    let j = 4 * idx[0] + idx[1];
+    let element = document.getElementById((j).toString());
+
+    let currentNumber = element.textContent;
+    if (currentNumber == "0") {
+        element.innerHTML = number;
+        updateColors(element, number.toString());
     }
 }
 
@@ -187,7 +181,7 @@ function compress(direction, row) {
     const array = row.map(element => parseInt(element));
     let zeroless = array.filter(element => element !== 0);
 
-    if ((direction == "w") || (direction == "n")) {
+    if ((direction == "e") || (direction == "s")) {
         let i = 0;
         while (i < zeroless.length) {
             if ((i + 1 < zeroless.length) && (zeroless[i] == zeroless[i + 1])) {
